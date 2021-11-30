@@ -27,3 +27,10 @@ class ClassTask:
     def print_color(self):
         print(self.color)
 
+Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/21 22:30')
+
+Tarea1.print_tittle()
+Tarea1.print_description()
+Tarea1.print_date()
+Tarea1.print_time()
+Tarea1.print_color()
