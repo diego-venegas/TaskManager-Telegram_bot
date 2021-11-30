@@ -81,6 +81,7 @@ class ClassTask:
         self.color = color
 
 
+'''
 # Programa ejemplo uso de la clase Tarea
 print('\nEjemplo uso de clase Tarea: \n')
 Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/21 22:30')
@@ -106,3 +107,4 @@ Tarea1.modify_color('#000000')
 Tarea1.print_color()
 
 print('\n')
+'''
