@@ -36,6 +36,16 @@ class Tests(unittest.TestCase):
         self.assertNotEquals(get_task('Reunion1'), Tarea)
         modify_task('Reunion1', 'Reunion2', 'Destruir Universidad', '1/12/21 22:00')
         self.assertEquals(get_task('Reunion1'), 'Error')
+    
+    def test_check_task(self):
+        """
+        Prueba check_task de taskController
+        """   
+        Tarea = ClassTask('Reunion3', 'Reunion con la Universidad', '1/11/21 15:00')
+        add_task(Tarea)
+        task=check_task('1/12/21 15:00')
+        self.assertIsInstance(task, str)
+        self.assertEquals(get_task('Reunion3'), 'Error')
 
 if __name__ == '__main__':
     unittest.main()
