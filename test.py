@@ -13,5 +13,16 @@ class Tests(unittest.TestCase):
         self.assertEquals(len(lista_inicial)+1, len(list_tasks))
         self.assertNotEquals(get_task('Reunion'), 'Error')
 
+    def test_remove_task(self):
+        """
+        Prueba remove_task de taskController
+        """   
+        Tarea = ClassTask('Reunion1', 'Reunion con la Universidad', '1/12/21 22:00')
+        add_task(Tarea)
+        lista_inicial=list_tasks
+        remove_task('Reunion1')
+        self.assertEquals(len(lista_inicial)-1, len(list_tasks))
+        self.assertEquals(get_task('Reunion1'), 'Error')
+
 if __name__ == '__main__':
     unittest.main()
