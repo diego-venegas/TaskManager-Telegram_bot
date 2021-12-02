@@ -1,4 +1,5 @@
 from taskClass import *
+from datetime import datetime
 list_tasks = []
 
 
@@ -67,9 +68,24 @@ def get_task(title):
     return None
 
 
-def print_task():
-    return None
+def check_task(date_time):
+    date_total = datetime.strptime(date_time, '%d/%m/%y %H:%M')
+    date = datetime.strftime(date_total, '%d/%m/%y')
+    time = datetime.strftime(date_total, '%H:%M')
+    text_return = ''
 
+    if len(list_tasks) > 0:
+        for task in list_tasks:
+            if task.return_date() <= date:
+                if task.return_time() <= time:
+                    text_return += str(task)
+                    list_tasks.remove(task)
+                else:
+                    break
+            else:
+                break
 
-def check_task():
-    return None
+    if len(text_return) > 0:
+        return text_return
+    else:
+        return None
