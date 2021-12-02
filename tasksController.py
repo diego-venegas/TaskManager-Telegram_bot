@@ -1,5 +1,6 @@
 from taskClass import *
 from datetime import datetime
+
 list_tasks = []
 
 
@@ -61,17 +62,17 @@ def modify_task(title, new_title, new_description, new_date):
     :param new_date: nueva fecha de la tarea.
     :return: bool
     """
-    
+
     task_to_modify = get_task(title)
-    
+
     if task_to_modify is not None:
-        
+
         task_to_modify.modify_title(new_title)
         task_to_modify.modify_description(new_description)
         task_to_modify.modify_date_time(new_date)
         print(f"Tarea Modificada")
         return True
-        
+
     else:
         print(f"Error, {title} no se encuentra creada")
         return False
@@ -121,3 +122,12 @@ def check_task(date_time):
         return text_return
     else:
         return None
+
+
+def visualize_tasks():
+    text_tasks = ''
+
+    for task in list_tasks:
+        text_tasks += str(task)
+
+    return text_tasks
