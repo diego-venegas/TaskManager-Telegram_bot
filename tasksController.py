@@ -32,6 +32,12 @@ def add_task(task):
 
 
 def remove_task(title):
+    """
+    Elimina una tarea del listado, verificando
+    si este se encuentra creado o no
+    :param title: Objecto tarea
+    :return:  None
+    """
     task_element = get_task(title)
 
     if task_element is not None:
