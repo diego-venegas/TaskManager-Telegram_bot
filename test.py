@@ -28,7 +28,7 @@ class Tests(unittest.TestCase):
         lista_inicial=list_tasks[:]                                                  #Copiar estado actual de list_task
         remove_task('Reunion1')                                                      #Quitar objeto de nombre indicado de list_task
         self.assertEquals(len(lista_inicial)-1, len(list_tasks))                     #Verificar que list_task disminuyó en 1
-        self.assertIsInstance(get_task('Reunion1'), None)                            #Verificar que se quitó el objeto de list_task
+        self.assertIsInstance(get_task('Reunion1'), type(None))                      #Verificar que se quitó el objeto de list_task
 
     def test_modify_task(self):
         """
@@ -44,7 +44,7 @@ class Tests(unittest.TestCase):
         self.assertEquals(len(lista_inicial), len(list_tasks))                       #Verificar que tamaño de list_task no cambia
         self.assertNotEquals(get_task('Reunion1'), Tarea)                            #Verificar que no se eliminó el objeto a modificar
         modify_task('Reunion1', 'Reunion2', 'Destruir Universidad', '1/12/21 22:00') #Modificar nombre de objeto indicado
-        self.assertIsInstance(get_task('Reunion1'), None)                            #Verificar que no se encuentra un objeto con el nombre anterior
+        self.assertIsInstance(get_task('Reunion1'), type(None))                            #Verificar que no se encuentra un objeto con el nombre anterior
     
     def test_check_task(self):
         """
@@ -57,10 +57,10 @@ class Tests(unittest.TestCase):
         add_task(Tarea)                                                              #Agregar objeto a list_task
         task=check_task('1/12/21 12:00')                                             #Busca en list_task un objeto con fecha igual a la ingresada
         self.assertIsInstance(task, str)                                             #Verifica que la funcion retorne un string 
-        self.assertIsInstance(get_task('Reunion3'), None)                            #Verifica que se haya eliminado de list_task el objeto encontrado
+        self.assertIsInstance(get_task('Reunion3'), type(None))                            #Verifica que se haya eliminado de list_task el objeto encontrado
         lista_inicial=list_tasks[:]                                                  #Copiar estado actual de list_task
         task1=check_task('1/12/21 11:00')                                            #Busca en list_task un objeto con fecha igual a la ingresada
-        self.assertIsInstance(task1, None)                                           #Verifica que la funcion no retorne nada
+        self.assertIsInstance(task1, type(None))                                           #Verifica que la funcion no retorne nada
         self.assertEquals(len(lista_inicial), len(list_tasks))                       #Verifica que tamaño de list_task no cambia
         
 if __name__ == '__main__':
