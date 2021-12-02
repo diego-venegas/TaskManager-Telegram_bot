@@ -41,28 +41,24 @@ class ClassTask:
         # Inicializamos el color de la tarea en formato #HEX
 
     # Retorna el titulo de la tarea
-    def print_title(self):
-        print(self.title)
+    def return_title(self):
+        return self.title
 
     # Retorna la descripción de la tarea
-    def print_description(self):
-        print(self.description)
+    def return_description(self):
+        return self.description
 
     # Retorna la fecha de la tarea con formato DIA/MES/AÑO
-    def print_date(self):
-        print(
-            datetime.strftime(self.date_time, '%d/%m/%y')
-        )
+    def return_date(self):
+        return datetime.strftime(self.date_time, '%d/%m/%y')
 
     # Retorna la hora y minuto de la tarea con formato HORA:MINUTO
-    def print_time(self):
-        print(
-            datetime.strftime(self.date_time, '%H:%M')
-        )
+    def return_time(self):
+        return datetime.strftime(self.date_time, '%H:%M')
 
     # Retorna el color asignado de la tarea
-    def print_color(self):
-        print(self.color)
+    def return_color(self):
+        return self.color
 
     # Modifica el titulo de la tarea
     def modify_title(self, title):
