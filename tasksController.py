@@ -48,7 +48,10 @@ def remove_task(title):
     return None
 
 
-def modify_task():
+def modify_task(title, new_title, new_description, new_date):
+    
+    task_to_modify = get_task(title)
+    
     return None
 
 
