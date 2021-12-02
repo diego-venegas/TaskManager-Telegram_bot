@@ -1,3 +1,4 @@
+from taskClass import *
 list_tasks = []
 
 
@@ -30,7 +31,14 @@ def add_task(task):
     return None
 
 
-def remove_task():
+def remove_task(title):
+    task_element = get_task(title)
+
+    if task_element is not None:
+        list_tasks.remove(task_element)
+        sort_tasks()
+    else:
+        print(f"Error, {title} no se encuentra creada")
     return None
 
 
