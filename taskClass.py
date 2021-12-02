@@ -76,6 +76,12 @@ class ClassTask:
     def modify_color(self, color):
         self.color = color
 
+    def _str_(self):
+        return(
+            f'\nDía: {self.return_date()}\n'
+            f'> {self.title} < ({self.return_time()})'
+            f'\n  {self.description}\n'
+        )
 
 '''
 # Programa ejemplo uso de la clase Tarea
