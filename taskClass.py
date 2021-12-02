@@ -77,7 +77,7 @@ class ClassTask:
         self.color = color
 
     # Devuelve la clase como un string con formato
-    def _str_(self):
+    def __str__(self):
         return(
             f'\nDía: {self.return_date()}\n'
             f'> {self.title} < ({self.return_time()})'
