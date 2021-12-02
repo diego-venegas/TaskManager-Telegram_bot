@@ -69,6 +69,14 @@ def get_task(title):
 
 
 def check_task(date_time):
+    """
+    Recibe una fecha y hora, verifica si coinciden 
+    con las de la tarea más próxima y devuelve un string
+    si lo hacen
+    :param title: Fecha y hora de posible tarea a verificar
+    :return: Si la fecha y hora coinciden, retorna un string con el
+    contenido de la tarea, si no, no devuelve nada
+    """
     date_total = datetime.strptime(date_time, '%d/%m/%y %H:%M')
     date = datetime.strftime(date_total, '%d/%m/%y')
     time = datetime.strftime(date_total, '%H:%M')
