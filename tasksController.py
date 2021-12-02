@@ -10,7 +10,13 @@ def sort_tarea():
     return None
 
 
-def add_task():
+def add_task(task):
+
+    if get_task(task.title) is None:
+        list_tasks.append(task)
+        sort_tarea()
+    else:
+        print(f"Error, {task.return_title()} ya se encuentra creada")
     return None
 
 
