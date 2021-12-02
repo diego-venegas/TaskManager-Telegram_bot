@@ -22,7 +22,7 @@ def add_task(task):
     :return:  None
     """
 
-    if get_task(task.title) is None:
+    if get_task(task.return_title()) is None:
         list_tasks.append(task)
         sort_tasks()
     else:
