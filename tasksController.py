@@ -1,3 +1,4 @@
+from taskClass import *
 list_tasks = []
 
 
@@ -22,7 +23,7 @@ def add_task(task):
     :return:  None
     """
 
-    if get_task(task.title) is None:
+    if get_task(task.return_title()) is None:
         list_tasks.append(task)
         sort_tasks()
     else:
@@ -30,7 +31,20 @@ def add_task(task):
     return None
 
 
-def remove_task():
+def remove_task(title):
+    """
+    Elimina una tarea del listado, verificando
+    si este se encuentra creado o no
+    :param title: Objecto tarea
+    :return:  None
+    """
+    task_element = get_task(title)
+
+    if task_element is not None:
+        list_tasks.remove(task_element)
+        sort_tasks()
+    else:
+        print(f"Error, {title} no se encuentra creada")
     return None
 
 
