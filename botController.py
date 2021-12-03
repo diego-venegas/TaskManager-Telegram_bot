@@ -1,27 +1,25 @@
 from telegram.ext import (
     Updater,
-    CommandHandler
+    CommandHandler,
+    MessageHandler,
+    Filters,
+    ConversationHandler
 )
-import telegram
-import time
-import tasksController
 
+from tasksController import *
+from datetime import datetime
 
-class Question:
+# Pasos crear tarea
+CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
+title = ''
+description = ''
+date = ''
 
-    def __init__(self, text, list_answers, correct_answers):
-        self.text = text
-        self.list_answers = list_answers
-        self.correct_answers = correct_answers
+# Pasos eliminar tarea
+DE_NAME = range(1)
 
-
-def add_typing(update, context):
-    context.bot.send_chat_action(
-        chat_id=get_chat_id(update, context),
-        action=telegram.ChatAction.TYPING,
-        timeout=1,
-    )
-    time.sleep(1)
+# Pasos editar tarea
+ED_NAME, ED_DESCRIPTION, ED_DATE = range(3)
 
 
 def get_chat_id(update, context):
@@ -36,52 +34,118 @@ def get_chat_id(update, context):
     return chat_id
 
 
-def create_commander(update, context):
-    c_id = get_chat_id(update, context)
-    add_typing(update, context)
-    context.bot.send_message(chat_id=get_chat_id(update, context),
-                             text=f"Hola estoy creando")
-
-    print("ewq")
+def cancel(update, context):
+    update.message.reply_text(f"Has cancelado la acción!!")
+    return ConversationHandler.END
 
 
-def edit_commander(update, context):
-    c_id = get_chat_id(update, context)
-    add_typing(update, context)
-    context.bot.send_message(chat_id=get_chat_id(update, context),
-                             text=f"Hola, estoy editando")
+##########################################
+
+def create_steps(update, context):
+    global title, description, date
+    title = ''
+    description = ''
+    date = ''
+
+    update.message.reply_text(f"Ingresa el nombre de la tarea a crear, esta debe ser mayor a 4 caracteres"
+                              f"\n>Si quieres cancelar el proceso escibre /Cancel")
+    return CT_TITLE
 
 
-def remover_commander(update, context):
-    c_id = get_chat_id(update, context)
-    add_typing(update, context)
-    context.bot.send_message(chat_id=get_chat_id(update, context),
-                             text=f"Hola, estoy eliminando")
+def create_step_title(update, context):
+    global title
+    title = update.message.text
+
+    if title == '/Cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if len(title) < 4:
+            update.message.reply_text(f"El nombre de la tarea debe ser mayor a 4 caracteres, intentalo denuevo!"
+                                      f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+        update.message.reply_text(f"Ingresa la descripción de la tarea a crear, sta debe ser mayor a 4 caracteres"
+                                  f"\n>Si quieres cancelar el proceso escibre /Cancel")
+        return CT_DESCRIPTION
 
 
-def visualize_commander(update, context):
-    c_id = get_chat_id(update, context)
-    add_typing(update, context)
-    context.bot.send_message(chat_id=get_chat_id(update, context),
-                             text=tasksController.visualize_tasks())
+def create_step_description(update, context):
+    global description
+    description = update.message.text
+
+    if description == '/Cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if len(description) < 4:
+            update.message.reply_text(f"La descripcióin de la tarea debe ser mayor a 4 caracteres, intentalo denuevo!"
+                                      f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+        update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato es DIA/MES/AÑO HORA:MINUTO")
+        return CT_DATE
+
+
+def create_step_date(update, context):
+    global title, description, date
+    date = update.message.text
+
+    if date == '/Cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        try:
+            datetime.strptime(date, '%d/%m/%y %H:%M')
+
+        except ValueError:
+
+            update.message.reply_text(f"El formato debe ser DIA/MES/AÑO HORA:MINUTO, intentalo denuevo!"
+                                      f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+        add_task(ClassTask(title, description, date))
+
+        update.message.reply_text(f"La tarea a sido creada con exito")
+        return ConversationHandler.END
+
+
+############################################
+
+
+def visualize(update, context):
+    update.message.reply_text(visualize_tasks())
+
+
+############################################
 
 
 def main():
-
     updater = Updater('2100146208:AAG2Je-LpR54dMBklwg6YXLHZwkDzfYdYQU', use_context=True)
 
     dp = updater.dispatcher
+    dp.add_handler(CommandHandler('Visualizar', visualize))
 
-    dp.add_handler(CommandHandler("Crear", create_commander))
-    dp.add_handler(CommandHandler("Editar", edit_commander))
-    dp.add_handler(CommandHandler("Eliminar", remover_commander))
-    dp.add_handler(CommandHandler("Visualizar", visualize_commander))
+    ct_conv_hand = ConversationHandler(
+        entry_points=[CommandHandler('Crear', create_steps)],
+        states={
+            CT_TITLE: [MessageHandler(Filters.text, create_step_title)],
+            CT_DESCRIPTION: [MessageHandler(Filters.text, create_step_description)],
+            CT_DATE: [MessageHandler(Filters.text, create_step_date)]
+        },
+        fallbacks=[CommandHandler('Cancel', cancel)]
+    )
 
+    dp.add_handler(ct_conv_hand)
     updater.start_polling()
     updater.idle()
 
 
 if __name__ == '__main__':
-    tasksController.add_task(tasksController.ClassTask('Reunion', 'Reunion con la Universidad', '1/12/21 22:30'))
-    tasksController.add_task(tasksController.ClassTask('Reunion2', 'Reunion con la Universidad', '1/12/21 22:30'))
     main()
