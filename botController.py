@@ -7,11 +7,11 @@ from telegram.ext import (
 )
 
 from tasksController import *
-from datetime import datetime
+from datetime import datetime, date
 
 title = ''
 description = ''
-date = ''
+date_user = ''
 
 # Pasos crear tarea
 CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
@@ -43,10 +43,10 @@ def cancel(update, context):
 ##########################################
 
 def create_steps(update, context):
-    global title, description, date
+    global title, description, date_user
     title = ''
     description = ''
-    date = ''
+    date_user = ''
 
     update.message.reply_text(f"Ingresa el nombre de la tarea a crear, esta debe ser mayor a 4 caracteres"
                               f"\n>Si quieres cancelar el proceso escibre /Cancel")
@@ -65,6 +65,11 @@ def create_step_title(update, context):
 
         if len(title) < 4:
             update.message.reply_text(f"El nombre de la tarea debe ser mayor a 4 caracteres, intentalo denuevo!"
+                                      f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+        if not isinstance(get_task(title), type(None)):
+            update.message.reply_text(f"El nombre de la tarea registrada, intentalo denuevo!"
                                       f"\n>Si quieres cancelar el proceso escibre /Cancel")
             return None
 
@@ -88,30 +93,40 @@ def create_step_description(update, context):
                                       f"\n>Si quieres cancelar el proceso escibre /Cancel")
             return None
 
-        update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato es DD/MM/YY hh:mm")
+        update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato es DD/MM/YYYY hh:mm")
         return CT_DATE
 
 
 def create_step_date(update, context):
-    global title, description, date
-    date = update.message.text
+    global title, description, date_user
+    date_user = update.message.text
 
-    if date == '/Cancel':
+    if date_user == '/Cancel':
         cancel(update, context)
         return ConversationHandler.END
 
     else:
 
         try:
-            datetime.strptime(date, '%d/%m/%y %H:%M')
+            datetime.strptime(date_user, '%d/%m/%Y %H:%M')
 
         except ValueError:
 
-            update.message.reply_text(f"El formato debe ser DD/MM/YY hh:mm, intentalo denuevo!"
+            update.message.reply_text(f"El formato debe ser DD/MM/YYYY hh:mm, intentalo denuevo!"
                                       f"\n>Si quieres cancelar el proceso escibre /Cancel")
             return None
 
-        add_task(ClassTask(title, description, date))
+        date_time_now = datetime.now()
+        date_time_user = datetime.strptime(date_user, '%d/%m/%Y %H:%M')
+
+        if date_time_user <= date_time_now:
+
+            update.message.reply_text(f"La fecha debe ser mayor a la actual, intentalo denuevo!"
+                                     f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+
+        add_task(ClassTask(title, description, date_user))
 
         update.message.reply_text(f"La tarea a sido creada con exito")
         return ConversationHandler.END
@@ -121,7 +136,6 @@ def create_step_date(update, context):
 
 
 def visualize(update, context):
-
     text = visualize_tasks()
 
     if len(text) > 0:
@@ -151,7 +165,7 @@ def remove_step_title(update, context):
     global title
     title = update.message.text
 
-    if date == '/Cancel':
+    if title == '/Cancel':
         cancel(update, context)
         return ConversationHandler.END
 

@@ -35,7 +35,7 @@ class ClassTask:
         # Inicializamos el titulo de la tarea
         self.description = description
         # Inicializamos la descripcion de la tarea
-        self.date_time = datetime.strptime(date, '%d/%m/%y %H:%M')
+        self.date_time = datetime.strptime(date, '%d/%m/%Y %H:%M')
         # Inicializamos la fecha y hora de la tarea
         self.color = color
         # Inicializamos el color de la tarea en formato #HEX
@@ -50,7 +50,7 @@ class ClassTask:
 
     # Retorna la fecha de la tarea con formato DIA/MES/AÑO
     def return_date(self):
-        return datetime.strftime(self.date_time, '%d/%m/%y')
+        return datetime.strftime(self.date_time, '%d/%m/%Y')
 
     # Retorna la hora y minuto de la tarea con formato HORA:MINUTO
     def return_time(self):
@@ -70,7 +70,7 @@ class ClassTask:
 
     # Modifica la fecha y hora de la tarea
     def modify_date_time(self, date):
-        self.date_time = datetime.strptime(date, '%d/%m/%y %H:%M')
+        self.date_time = datetime.strptime(date, '%d/%m/%Y %H:%M')
 
     # Modifica el color de la tarea
     def modify_color(self, color):
@@ -87,27 +87,27 @@ class ClassTask:
 '''
 # Programa ejemplo uso de la clase Tarea
 print('\nEjemplo uso de clase Tarea: \n')
-Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/21 22:30')
+Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/2100 22:30')
 
-Tarea1.print_title()
-Tarea1.print_description()
-Tarea1.print_date()
-Tarea1.print_time()
-Tarea1.print_color()
+print(Tarea1.return_title())
+print(Tarea1.return_description())
+print(Tarea1.return_date())
+print(Tarea1.return_time())
+print(Tarea1.return_color())
 
 print('\nModificaciones: \n')
 Tarea1.modify_title('Reunion 2')
-Tarea1.print_title()
+print(Tarea1.return_title())
 
 Tarea1.modify_description('Reunion con la Universidad 2')
-Tarea1.print_description()
+print(Tarea1.return_description())
 
-Tarea1.modify_date_time('1/1/22 10:30')
-Tarea1.print_date()
-Tarea1.print_time()
+Tarea1.modify_date_time('1/1/2200 10:30')
+print(Tarea1.return_date())
+print(Tarea1.return_time())
 
 Tarea1.modify_color('#000000')
-Tarea1.print_color()
+print(Tarea1.return_color())
 
 print('\n')
 '''
