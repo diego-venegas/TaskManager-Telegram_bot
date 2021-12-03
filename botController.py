@@ -9,11 +9,12 @@ from telegram.ext import (
 from tasksController import *
 from datetime import datetime
 
-# Pasos crear tarea
-CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
 title = ''
 description = ''
 date = ''
+
+# Pasos crear tarea
+CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
 
 # Pasos eliminar tarea
 DE_NAME = range(1)
@@ -87,7 +88,7 @@ def create_step_description(update, context):
                                       f"\n>Si quieres cancelar el proceso escibre /Cancel")
             return None
 
-        update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato es DIA/MES/AÑO HORA:MINUTO")
+        update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato es DD/MM/YY hh:mm")
         return CT_DATE
 
 
@@ -106,7 +107,7 @@ def create_step_date(update, context):
 
         except ValueError:
 
-            update.message.reply_text(f"El formato debe ser DIA/MES/AÑO HORA:MINUTO, intentalo denuevo!"
+            update.message.reply_text(f"El formato debe ser DD/MM/YY hh:mm, intentalo denuevo!"
                                       f"\n>Si quieres cancelar el proceso escibre /Cancel")
             return None
 
@@ -120,17 +121,62 @@ def create_step_date(update, context):
 
 
 def visualize(update, context):
-    update.message.reply_text(visualize_tasks())
+
+    text = visualize_tasks()
+
+    if len(text) > 0:
+
+        update.message.reply_text(text)
+
+    else:
+
+        update.message.reply_text("No hay tareas agregadas. Empieza a crear!")
 
 
 ############################################
 
+############################################
+
+
+def remove_steps(update, context):
+    global title
+    title = ''
+
+    update.message.reply_text(f"Ingresa el nombre de la tarea que deseas eliminar, esta debe ser mayor a 4 caracteres"
+                              f"\n>Si quieres cancelar el proceso escibre /Cancel")
+    return DE_NAME
+
+
+def remove_step_title(update, context):
+    global title
+    title = update.message.text
+
+    if date == '/Cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if not isinstance(get_task(title), type(None)):
+
+            remove_task(title)
+
+        else:
+
+            update.message.reply_text(f"El titulo de la tarea ingresada no existe, intentalo denuevo!"
+                                      f"\n>Si quieres cancelar el proceso escibre /Cancel")
+            return None
+
+        update.message.reply_text(f"La tarea a sido eliminada con exito")
+        return ConversationHandler.END
+
+
+############################################
 
 def main():
     updater = Updater('2100146208:AAG2Je-LpR54dMBklwg6YXLHZwkDzfYdYQU', use_context=True)
 
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler('Visualizar', visualize))
 
     ct_conv_hand = ConversationHandler(
         entry_points=[CommandHandler('Crear', create_steps)],
@@ -142,7 +188,17 @@ def main():
         fallbacks=[CommandHandler('Cancel', cancel)]
     )
 
+    de_conv_hand = ConversationHandler(
+        entry_points=[CommandHandler('Eliminar', remove_steps)],
+        states={
+            DE_NAME: [MessageHandler(Filters.text, remove_step_title)],
+        },
+        fallbacks=[CommandHandler('Cancel', cancel)]
+    )
+
+    dp.add_handler(CommandHandler('Visualizar', visualize))
     dp.add_handler(ct_conv_hand)
+    dp.add_handler(de_conv_hand)
     updater.start_polling()
     updater.idle()
 
