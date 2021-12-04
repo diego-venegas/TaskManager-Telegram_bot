@@ -11,7 +11,7 @@ class Tests(unittest.TestCase):
         que los ordena desde el de fecha más lejana al de fecha más cercana
         """
         lista_inicial=list_tasks[:]                                                  #Copiar estado inicial de list_task
-        Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/21 22:30') #Crear objeto ClassTask
+        Tarea1 = ClassTask('Reunion', 'Reunion con la Universidad', '1/12/2021 22:30') #Crear objeto ClassTask
         add_task(Tarea1)                                                             #Agregar objeto a list_task
         self.assertEqual(len(lista_inicial)+1, len(list_tasks))                     #Verificar que list_task creció en 1
         self.assertIsInstance(get_task('Reunion'), ClassTask)                        #Verificar que se agregó el objeto a list_task
@@ -23,7 +23,7 @@ class Tests(unittest.TestCase):
         remove_task recibe el nombre de un objeto del tipo ClassTask como string y elimina dicho objeto 
         de la lista list_task. 
         """   
-        Tarea = ClassTask('Reunion1', 'Reunion con la Universidad', '1/12/21 22:00') #Crear objeto ClassTask
+        Tarea = ClassTask('Reunion1', 'Reunion con la Universidad', '1/12/2021 22:00') #Crear objeto ClassTask
         add_task(Tarea)                                                              #Agregar objeto a list_task
         lista_inicial=list_tasks[:]                                                  #Copiar estado actual de list_task
         remove_task('Reunion1')                                                      #Quitar objeto de nombre indicado de list_task
@@ -37,13 +37,13 @@ class Tests(unittest.TestCase):
         modify_task recibe como argumentos el nombre actual de un objeto del tipo ClassTask, el nuevo nombre, la nueva descripcion y 
         la nueva fecha de este y modifica el objeto indicado por el nombre actual usando los nuevos parametros
         """   
-        Tarea = ClassTask('Reunion1', 'Reunion con la Universidad', '1/12/21 22:00') #Crear objeto ClassTask
+        Tarea = ClassTask('Reunion1', 'Reunion con la Universidad', '1/12/2021 22:00') #Crear objeto ClassTask
         add_task(Tarea)                                                              #Agregar objeto a list_task
         lista_inicial=list_tasks[:]                                                  #Copiar estado actual de list_task
-        modify_task('Reunion1', 'Reunion1', 'Destruir Universidad', '1/12/21 22:00') #Modificar descripcion de objeto indicado
+        modify_task('Reunion1', 'Reunion1', 'Destruir Universidad', '1/12/2021 22:00') #Modificar descripcion de objeto indicado
         self.assertEqual(len(lista_inicial), len(list_tasks))                        #Verificar que tamaño de list_task no cambia
         self.assertNotIsInstance(get_task('Reunion1'), type(None))                   #Verificar que no se eliminó el objeto a modificar
-        modify_task('Reunion1', 'Reunion2', 'Destruir Universidad', '1/12/21 22:00') #Modificar nombre de objeto indicado
+        modify_task('Reunion1', 'Reunion2', 'Destruir Universidad', '1/12/2021 22:00') #Modificar nombre de objeto indicado
         self.assertIsInstance(get_task('Reunion1'), type(None))                      #Verificar que no se encuentra un objeto con el nombre anterior
     
     def test_check_task(self):
@@ -53,7 +53,7 @@ class Tests(unittest.TestCase):
         check_task recibe una fecha y revisa si el ultimo objeto del tipo ClassTask dentro list_task tiene fecha igual a la dada. 
         Si encuentra un objeto con la misma fecha que la indicada, retorna un string formateado, de lo contrario no devuelve nada.
         """   
-        Tarea = ClassTask('Reunion3', 'Reunion con la Universidad', '1/12/21 12:00') #Crear objeto ClassTask
+        Tarea = ClassTask('Reunion3', 'Reunion con la Universidad', '1/12/2021 12:00') #Crear objeto ClassTask
         add_task(Tarea)                                                              #Agregar objeto a list_task
         task=check_task('1/12/21 12:00')                                             #Busca en list_task un objeto con fecha igual a la ingresada
         self.assertIsInstance(task, str)                                             #Verifica que la funcion retorne un string 
