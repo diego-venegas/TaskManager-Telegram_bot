@@ -13,6 +13,7 @@ new_title = ''
 description = ''
 date_user = ''
 count = 0
+chat_id = 0
 
 # Pasos crear tarea
 CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
@@ -26,9 +27,6 @@ ED_FIND, ED_TITLE, ED_DESCRIPTION, ED_DATE = range(4)
 
 def cancel(update, context):
     update.message.reply_text(f"Has cancelado la acción!!")
-    text = visualize_tasks()
-    if len(text) > 0:
-        start(update, context)
     return ConversationHandler.END
 
 
@@ -146,7 +144,6 @@ def create_step_date(update, context):
         add_task(ClassTask(title, description, date_user))
 
         update.message.reply_text(f"La tarea ha sido creada con éxito")
-        start(update, context)
         return ConversationHandler.END
 
 
@@ -328,7 +325,7 @@ def remove_steps(update, context):
     title = ''
 
     update.message.reply_text(f"Ingresa el nombre de la tarea que deseas eliminar, esta debe ser mayor a 4 caracteres"
-                              f"\n>Si quieres cancelar el proceso escibre /Cancel")
+                              f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
     return DE_NAME
 
 
@@ -353,16 +350,16 @@ def remove_step_title(update, context):
             return None
 
         update.message.reply_text(f"La tarea ha sido eliminada con éxito")
-        start(update, context)
         return ConversationHandler.END
 
 
 def alarm(context):
-    global count
+    global count, chat_id
     count += 1
-    print(f'Saludos realizados: {count}')
+    print(f'Minutos pasados: {count}')
     ahora = datetime.now()
-    if list_tasks[0].datetime <= ahora:
+    if len(list_tasks) > 0 and list_tasks[0].date_time <= ahora:
+        context.bot.send_message(chat_id=chat_id, text=f"Tarea ha finalizado:\n{str(list_tasks[0])}")
         print("Fecha primera tarea es menor a la fecha actual. Tarea se elimina de la lista")
         del list_tasks[0]
 
