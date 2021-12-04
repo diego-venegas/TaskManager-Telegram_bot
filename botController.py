@@ -9,6 +9,7 @@ from telegram.ext import (
 from tasksController import *
 
 title = ''
+new_title = ''
 description = ''
 date_user = ''
 count = 0
@@ -20,7 +21,7 @@ CT_TITLE, CT_DESCRIPTION, CT_DATE = range(3)
 DE_NAME = range(1)
 
 # Pasos editar tarea
-ED_NAME, ED_DESCRIPTION, ED_DATE = range(3)
+ED_FIND, ED_TITLE, ED_DESCRIPTION, ED_DATE = range(4)
 
 
 def cancel(update, context):
@@ -29,6 +30,47 @@ def cancel(update, context):
     if len(text) > 0:
         start(update, context)
     return ConversationHandler.END
+
+
+##########################################
+
+def verify_title(text):
+    if len(text) < 4:
+        return (f"El nombre de la tarea debe ser mayor a 4 caracteres. ¡Intentalo de nuevo!"
+                f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+    if not isinstance(get_task(text), type(None)):
+        return (f"El nombre de la tarea ya existe. ¡Reintenta con otro nombre!"
+                f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+    return ''
+
+
+def verify_description(text):
+    if len(text) < 4:
+        return (f"La descripción de la tarea debe tener 4 o más caracteres. ¡Intentalo de nuevo!"
+                f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+    return ''
+
+
+def verify_date(text):
+    try:
+        datetime.strptime(text, '%d/%m/%Y %H:%M')
+
+        date_time_now = datetime.now()
+        date_time_user = datetime.strptime(text, '%d/%m/%Y %H:%M')
+
+        if date_time_user <= date_time_now:
+            return (f"La fecha debe ser mayor a la actual, intentalo denuevo!"
+                    f"\n>Si quieres cancelar el proceso escibre /Cancel")
+
+    except ValueError:
+
+        return (f"El formato debe ser DD/MM/YYYY hh:mm. ¡Intentalo de nuevo!"
+                f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+    return ''
 
 
 ##########################################
@@ -54,14 +96,10 @@ def create_step_title(update, context):
 
     else:
 
-        if len(title) < 4:
-            update.message.reply_text(f"El nombre de la tarea debe ser mayor a 4 caracteres. ¡Intentalo de nuevo!"
-                                      f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
-            return None
+        verification = verify_title(title)
 
-        if not isinstance(get_task(title), type(None)):
-            update.message.reply_text(f"El nombre de la tarea ya existe. ¡Reintenta con otro nombre!"
-                                      f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+        if verification != '':
+            update.message.reply_text(verification)
             return None
 
         update.message.reply_text(f"Ingresa la descripción de la tarea a crear. Esta debe tener 4 o más caracteres"
@@ -79,9 +117,10 @@ def create_step_description(update, context):
 
     else:
 
-        if len(description) < 4:
-            update.message.reply_text(f"La descripción de la tarea debe tener 4 o más caracteres. ¡Intentalo de nuevo!"
-                                      f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+        verification = verify_description(description)
+
+        if verification != '':
+            update.message.reply_text(verification)
             return None
 
         update.message.reply_text(f"Ingresa la fecha de la tarea a crear, \nel formato debe ser en DD/MM/YYYY hh:mm")
@@ -98,22 +137,10 @@ def create_step_date(update, context):
 
     else:
 
-        try:
-            datetime.strptime(date_user, '%d/%m/%Y %H:%M')
+        verification = verify_date(date_user)
 
-        except ValueError:
-
-            update.message.reply_text(f"El formato debe ser DD/MM/YYYY hh:mm. ¡Intentalo de nuevo!"
-                                      f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
-            return None
-
-        date_time_now = datetime.now()
-        date_time_user = datetime.strptime(date_user, '%d/%m/%Y %H:%M')
-
-        if date_time_user <= date_time_now:
-
-            update.message.reply_text(f"La fecha debe ser mayor a la actual, intentalo denuevo!"
-                                     f"\n>Si quieres cancelar el proceso escibre /Cancel")
+        if verification != '':
+            update.message.reply_text(verification)
             return None
 
         add_task(ClassTask(title, description, date_user))
@@ -140,6 +167,158 @@ def visualize(update, context):
 
 
 ############################################
+
+
+def edit_steps(update, context):
+    update.message.reply_text(f"Ingresa el nombre de la tarea a editar. Esta debe tener 4 o más caracteres"
+                              f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+    return ED_FIND
+
+
+def edit_step_find(update, context):
+    global title, description, date_user
+    title = update.message.text
+
+    if title == '/Cancel' or title == '/cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        task = get_task(title)
+
+        if isinstance(task, type(None)):
+
+            update.message.reply_text(
+                f"Tarea no encontrada. ¡Reintentalo de nuevo!"
+                f"\n>Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+            return None
+
+        else:
+
+            description = task.return_description()
+            date_user = task.return_date() + ' ' + task.return_time()
+
+            update.message.reply_text(f"El nombre actual de la tarea es '{title}'.\n"
+                                      f"Si deseas cambiar el nombre, escribe el nuevo, sino, escribe no.\n"
+                                      f">Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+            return ED_TITLE
+
+
+def edit_step_change_title(update, context):
+    global title, new_title, description
+    new_title = update.message.text
+
+    if new_title == '/Cancel' or new_title == '/cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if new_title == 'No' or new_title == 'no':
+
+            update.message.reply_text(f"El título de la tarea se mantiene como '{title}'\n"
+                                      f">Si quieres cancelar el proceso, presiona este comando /Cancel")
+
+            new_title = title
+
+        else:
+
+            verification = verify_title(new_title)
+
+            if verification != '':
+                update.message.reply_text(verification)
+                return None
+
+            if new_title == title:
+
+                update.message.reply_text(f"WARNING: El nuevo título de tarea es igual al anterior, "
+                                          f"por lo que se mantiene '{title}'.\n")
+
+            else:
+
+                update.message.reply_text(f"Se ha editado el título de la tarea con éxito a '{new_title}'.")
+
+        update.message.reply_text(f"La descripción actual de la tarea es:\n{description}.\n"
+                                  f"Si deseas cambiarla, escribe una nueva, sino, escribe 'no'.\n"
+                                  f">Si quieres cancelar el proceso, presiona este comando /Cancel")
+        return ED_DESCRIPTION
+
+
+def edit_step_change_description(update, context):
+    global description, date_user
+    new_description = update.message.text
+
+    if new_description == '/Cancel' or new_description == '/cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if new_description == 'No' or new_description == 'no':
+
+            update.message.reply_text(f"La descripción de la tarea se mantiene como:\n'{description}'\n")
+
+        else:
+
+            verification = verify_description(new_description)
+
+            if verification != '':
+                update.message.reply_text(verification)
+                return None
+
+            if new_description == description:
+
+                update.message.reply_text(f"La descripción ingresada es igual a la anterior, por lo que se "
+                                          f"mantiene:\n'{description}'\n")
+            else:
+
+                description = new_description
+                update.message.reply_text(f"Se ha editado la descripción de la tarea con éxito a:\n'{description}'\n")
+
+        update.message.reply_text(f"La fecha/hora actual de la tarea es '{date_user}'\n"
+                                  f"Si deseas cambiarla, escribe una nueva, sino, escribe 'no'.\n"
+                                  f">Si quieres cancelar el proceso, presiona este comando /Cancel")
+        return ED_DATE
+
+
+def edit_step_change_date(update, context):
+    global title, new_title, description, date_user
+    new_date = update.message.text
+
+    if new_date == '/Cancel' or new_date == '/cancel':
+        cancel(update, context)
+        return ConversationHandler.END
+
+    else:
+
+        if new_date == 'No' or new_date == 'no':
+
+            update.message.reply_text(f"La fecha/hora de la tarea se mantiene como '{date_user}'\n")
+
+        else:
+
+            verification = verify_date(new_date)
+
+            if verification != '':
+                update.message.reply_text(verification)
+                return None
+
+            if new_date == date_user:
+
+                update.message.reply_text(f"La fecha/hora ingresada es igual a la anterior, por lo que se "
+                                          f"mantiene: '{date_user}'\n")
+            else:
+
+                date_user = new_date
+                update.message.reply_text(f"Se ha editado la fecha/hora de la tarea con éxito a '{date_user}'\n")
+
+        modify_task(title, new_title, description, date_user)
+        update.message.reply_text(f"Se ha modificado con éxito la tarea.")
+        return ConversationHandler.END
+
 
 ############################################
 
@@ -189,7 +368,9 @@ def alarm(context):
 
 
 def start(update, context):
-    context.job_queue.run_repeating(alarm, interval = 60, context = update.message.chat_id)
+    global chat_id
+    chat_id = update.message.chat_id
+    context.job_queue.run_repeating(alarm, interval=60, context=update.message.chat_id)
 
 
 ############################################
@@ -217,10 +398,22 @@ def main():
         fallbacks=[CommandHandler('Cancel', cancel)]
     )
 
+    ed_conv_hand = ConversationHandler(
+        entry_points=[CommandHandler('Editar', edit_steps)],
+        states={
+            ED_FIND: [MessageHandler(Filters.text, edit_step_find)],
+            ED_TITLE: [MessageHandler(Filters.text, edit_step_change_title)],
+            ED_DESCRIPTION: [MessageHandler(Filters.text, edit_step_change_description)],
+            ED_DATE: [MessageHandler(Filters.text, edit_step_change_date)]
+        },
+        fallbacks=[CommandHandler('Cancel', cancel)]
+    )
+
     dp.add_handler(CommandHandler('Visualizar', visualize))
     dp.add_handler(CommandHandler('Start', start))
     dp.add_handler(ct_conv_hand)
     dp.add_handler(de_conv_hand)
+    dp.add_handler(ed_conv_hand)
     updater.start_polling()
     updater.idle()
 

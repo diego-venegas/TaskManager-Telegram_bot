@@ -70,6 +70,7 @@ def modify_task(title, new_title, new_description, new_date):
         task_to_modify.modify_title(new_title)
         task_to_modify.modify_description(new_description)
         task_to_modify.modify_date_time(new_date)
+        sort_tasks()
         print(f"Tarea Modificada")
         return True
 
