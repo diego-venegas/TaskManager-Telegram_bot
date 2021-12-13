@@ -25,13 +25,7 @@ DE_NAME = range(1)
 ED_FIND, ED_TITLE, ED_DESCRIPTION, ED_DATE = range(4)
 
 
-def cancel(update, context):
-    update.message.reply_text(f"Has cancelado la acción!!")
-    return ConversationHandler.END
-
-
 ##########################################
-
 def verify_title(text):
     if len(text) < 4:
         return (f"El nombre de la tarea debe ser mayor a 4 caracteres. ¡Intentalo de nuevo!"
@@ -89,7 +83,7 @@ def create_step_title(update, context):
     title = update.message.text
 
     if title == '/Cancel' or title == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -110,7 +104,7 @@ def create_step_description(update, context):
     description = update.message.text
 
     if description == '/Cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -130,7 +124,7 @@ def create_step_date(update, context):
     date_user = update.message.text
 
     if date_user == '/Cancel' or date_user == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -177,7 +171,7 @@ def edit_step_find(update, context):
     title = update.message.text
 
     if title == '/Cancel' or title == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -209,7 +203,7 @@ def edit_step_change_title(update, context):
     new_title = update.message.text
 
     if new_title == '/Cancel' or new_title == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -249,7 +243,7 @@ def edit_step_change_description(update, context):
     new_description = update.message.text
 
     if new_description == '/Cancel' or new_description == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -286,7 +280,7 @@ def edit_step_change_date(update, context):
     new_date = update.message.text
 
     if new_date == '/Cancel' or new_date == '/cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
@@ -334,7 +328,7 @@ def remove_step_title(update, context):
     title = update.message.text
 
     if title == '/Cancel':
-        cancel(update, context)
+        update.message.reply_text(f"Has cancelado la acción!!")
         return ConversationHandler.END
 
     else:
