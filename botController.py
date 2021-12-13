@@ -346,6 +346,8 @@ def remove_step_title(update: Update, context: CallbackContext):
         return ConversationHandler.END
 
 
+# PROGRAMACION DE TAREAS AUXILIARES EN SEGUNDO PLANO #################################
+
 def alarm(context):
     global chat_id
     ahora = datetime.now()
@@ -359,6 +361,22 @@ def alarm(context):
                 del list_tasks[i]
 
 
+def notify_less_30min(context):
+    global chat_id
+    ahora = datetime.now()
+    por_terminar = ''
+
+    if len(list_tasks) > 0:
+        for i in range(len(list_tasks)):
+            if (list_tasks[i].date_time - ahora) <= timedelta(minutes = 30):
+                por_terminar += str(list_tasks[i])
+
+        if len(por_terminar) > 0:
+            context.bot.send_message(chat_id = chat_id, text = f"Tareas por finalizar en menos de 30 minutos:\n{por_terminar}")
+
+
+# CONTROL DE INICIO DE LA APLICACION DE TELEGRAM ########################################
+
 def start(update: Update, context: CallbackContext):
     global chat_id
     chat_id = update.message.chat_id
@@ -367,6 +385,7 @@ def start(update: Update, context: CallbackContext):
                               f"Para ver las opciones disponibles, solo presiona este comando: /Opciones")
 
     context.job_queue.run_repeating(alarm, interval = 60, context = update.message.chat_id)
+    context.job_queue.run_repeating(notify_less_30min, interval = 60 * 15, context = update.message.chat_id)
 
 
 def options(update: Update, context: CallbackContext) -> int:
@@ -374,14 +393,14 @@ def options(update: Update, context: CallbackContext) -> int:
     logger.info("User %s started the conversation.", user.first_name)
 
     keyboard = [
-            [
-                InlineKeyboardButton("Crear", callback_data = "CREAR"),
-                InlineKeyboardButton("Visualizar", callback_data = "VISUALIZAR"),
-            ],
-            [
-                InlineKeyboardButton("Editar", callback_data = "EDITAR"),
-                InlineKeyboardButton("Eliminar", callback_data = "ELIMINAR"),
-            ]
+        [
+            InlineKeyboardButton("Crear", callback_data = "CREAR"),
+            InlineKeyboardButton("Visualizar", callback_data = "VISUALIZAR"),
+        ],
+        [
+            InlineKeyboardButton("Editar", callback_data = "EDITAR"),
+            InlineKeyboardButton("Eliminar", callback_data = "ELIMINAR"),
+        ]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -389,7 +408,7 @@ def options(update: Update, context: CallbackContext) -> int:
     return INIT
 
 
-############################################
+# MANEJO PRINCIPAL DE LA APP DE TELEGRAM: CONFIGURACION, HANDLERS Y UPDATE ###############
 
 def main():
     updater = Updater('2100146208:AAG2Je-LpR54dMBklwg6YXLHZwkDzfYdYQU', use_context = True)
